@@ -31,18 +31,18 @@ public class EmployeeServlet extends HttpServlet {
 
             Connection connection=dataSource.getConnection();
             PreparedStatement pstm=
-                    connection.prepareStatement("INSERT INTO employees" +
-                            "(eid,ename,eaddress,uemail) Values (?,?,?,?)");
+                    connection.prepareStatement("INSERT INTO employee" +
+                            "(eid,ename,eaddress,eemail) Values (?,?,?,?)");
             pstm.setString(1, UUID.randomUUID().toString());
-            pstm.setString(2, employee.get("uname"));
+            pstm.setString(2, employee.get("ename"));
             pstm.setString(3,employee.get("eaddress"));
-            pstm.setString(4,employee.get("uemail"));
+            pstm.setString(4,employee.get("eemail"));
 
             int executed=pstm.executeUpdate();
             PrintWriter out=resp.getWriter();
             resp.setContentType("application/json");
             if(executed>0){
-                resp.setStatus(HttpServletResponse.SC_ACCEPTED);
+                resp.setStatus(HttpServletResponse.SC_CREATED);
                 mapper.writeValue(out,Map.of(
                         "code","201",
                         "status","success",
