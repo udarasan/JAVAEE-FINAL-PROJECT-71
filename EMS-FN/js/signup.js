@@ -14,7 +14,9 @@ $('#sign-up-btn').on('click', function() {
             }),
             contentType: 'application/json',
             success: function(response) {
-                if (response.success) {
+                console.log(response.code);
+                if (response.code===201) {
+                    console.log('User registered successfully');
                     window.location.href = 'signin.html';
                 } else {
                     $('#error-message').text(response.message).show();

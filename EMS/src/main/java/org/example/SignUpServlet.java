@@ -22,14 +22,15 @@ public class SignUpServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //read json obj and write in to hashmap
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String,String> user = mapper.readValue(req.getInputStream(), Map.class);
-
-        //save user in database
-        ServletContext sc = req.getServletContext();
-        BasicDataSource dataSource= (BasicDataSource) sc.getAttribute("ds");
         try {
+            //read json obj and write in to hashmap
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String,String> user = mapper.readValue(req.getInputStream(), Map.class);
+
+            //save user in database
+            ServletContext sc = req.getServletContext();
+            BasicDataSource dataSource= (BasicDataSource) sc.getAttribute("ds");
+
             Connection connection=dataSource.getConnection();
             PreparedStatement pstm=
                     connection.prepareStatement("INSERT INTO systemusers" +
@@ -43,14 +44,32 @@ public class SignUpServlet extends HttpServlet {
             PrintWriter out=resp.getWriter();
             resp.setContentType("application/json");
             if(executed>0){
-                resp.setStatus(200);
+                resp.setStatus(HttpServletResponse.SC_ACCEPTED);
+                mapper.writeValue(out,Map.of(
+                        "code","201",
+                        "status","success",
+                        "message","User signed up successfully"
+                ));
             }else {
-                resp.setStatus(500);
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                mapper.writeValue(out,Map.of(
+                        "code","400",
+                        "status","error",
+                        "message","Bad Request"
+                ));
             }
-        } catch (SQLException e) {
+            connection.close();
+        } catch (Exception e) {
+            ObjectMapper mapper = new ObjectMapper();
+            PrintWriter out=resp.getWriter();
+            resp.setContentType("application/json");
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            mapper.writeValue(out,Map.of(
+                    "code","500",
+                    "status","error",
+                    "message","Internal Server Error"
+            ));
             throw new RuntimeException(e);
         }
-
-
     }
 }
