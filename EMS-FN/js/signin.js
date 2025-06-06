@@ -13,6 +13,7 @@ $('#sign-btn').on('click', function() {
         success: function(response) {
             console.log(response);
             if (response.code === '200') {
+                localStorage.setItem('uemail', email);
                 window.location.href = 'dashboard.html';
             } else {
                 alert('Error: ' + response.message);
