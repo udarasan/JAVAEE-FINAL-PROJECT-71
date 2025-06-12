@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.io.IOException;
@@ -28,7 +29,19 @@ public class EmployeeServlet extends HttpServlet {
         String eid = req.getParameter("eid");
         String ename = req.getParameter("ename");
         String eemail = req.getParameter("eemail");
-        System.out.println("eid:"+eid+",ename:"+ename+",eemail:"+eemail);
+
+        Part filepart = req.getPart("eimage");
+        String fileName = filepart.getSubmittedFileName();
+        System.out.println("fileName:"+fileName);
+
+        String uploadPath="C:\\Lectures\\Batch\\GDSE71\\AAD\\JavaEE\\Work\\EMS-FN\\assests";
+        java.io.File file=new java.io.File(uploadPath);
+        if(!file.exists()){
+            file.mkdir();
+        }
+        String fileAbsolutePath=uploadPath+java.io.File.separator+fileName;
+        filepart.write(fileAbsolutePath);
+
     }
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
