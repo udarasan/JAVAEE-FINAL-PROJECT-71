@@ -96,7 +96,7 @@ public class EmployeeServlet extends HttpServlet {
 
         try (Connection connection = ds.getConnection()) {
             PreparedStatement pstm = connection.prepareStatement(
-                    "SELECT eid, ename, eaddress, eemail FROM employee"
+                    "SELECT eid, ename, eaddress, eemail,eimage FROM employee"
             );
             ResultSet rs = pstm.executeQuery();
 
@@ -108,7 +108,8 @@ public class EmployeeServlet extends HttpServlet {
                         "eid", rs.getString("eid"),
                         "ename", rs.getString("ename"),
                         "eaddress", rs.getString("eaddress"),
-                        "eemail", rs.getString("eemail")
+                        "eemail", rs.getString("eemail"),
+                        "eimage", rs.getString("eimage")
                 );
                 employees.add(emp);
             }
@@ -123,12 +124,13 @@ public class EmployeeServlet extends HttpServlet {
             ));
 
         } catch (Exception e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            throw new RuntimeException(e);
+           /* resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             mapper.writeValue(resp.getWriter(), Map.of(
                     "code", "500",
                     "status", "error",
                     "message", "Internal server error!"
-            ));
+            ));*/
         }
     }
 

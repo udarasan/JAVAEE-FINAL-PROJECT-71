@@ -98,6 +98,7 @@ function fetchEmployees() {
                              <td>${employee.eaddress}</td>
                             
                             <td>${employee.eemail}</td>
+                            <td><img src="/assests/${employee.eimage}" alt="Employee Image" style="width: 50px; height: 50px;"></td>
                             
                         </tr>`
                     );
