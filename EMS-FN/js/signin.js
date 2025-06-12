@@ -1,3 +1,13 @@
+//window open
+$(document).ready(function() {
+    // Check if user is logged in
+    var email = localStorage.getItem('uemail');
+    if (!email) {
+       
+    } else {
+        window.location.href = 'dashboard.html';
+    }
+});
 $('#sign-btn').on('click', function() {
     var email = $('#email').val();
     var password = $('#password').val();
