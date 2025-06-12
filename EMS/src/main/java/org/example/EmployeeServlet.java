@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +27,11 @@ import java.util.UUID;
 public class EmployeeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String eid = req.getParameter("eid");
+
+        String eid=UUID.randomUUID().toString();
         String ename = req.getParameter("ename");
         String eemail = req.getParameter("eemail");
+        String eaddress = req.getParameter("eaddress");
 
         Part filepart = req.getPart("eimage");
         String fileName = filepart.getSubmittedFileName();
@@ -41,6 +44,46 @@ public class EmployeeServlet extends HttpServlet {
         }
         String fileAbsolutePath=uploadPath+java.io.File.separator+fileName;
         filepart.write(fileAbsolutePath);
+
+        ServletContext sc = req.getServletContext();
+        BasicDataSource ds = (BasicDataSource) sc.getAttribute("ds");
+
+        try {
+            Connection connection=ds.getConnection();
+            PreparedStatement preparedStatement=connection.prepareStatement(
+                    "INSERT INTO employee (eid, ename, eemail,eaddress,eimage) " +
+                            "VALUES (?,?,?,?,?)");
+            preparedStatement.setString(1, eid);
+            preparedStatement.setString(2, ename);
+            preparedStatement.setString(3, eemail);
+            preparedStatement.setString(4, eaddress);
+            preparedStatement.setString(5, fileName);
+
+            int executed=preparedStatement.executeUpdate();
+            
+            ObjectMapper mapper = new ObjectMapper();
+            PrintWriter out = resp.getWriter();
+            resp.setContentType("application/json");
+
+            if(executed>0){
+                resp.setStatus(HttpServletResponse.SC_CREATED);
+                mapper.writeValue(out,Map.of(
+                        "code","201",
+                        "status","success",
+                        "message","Employee has been created!"
+                ));
+            }else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                mapper.writeValue(out,Map.of(
+                        "code","400",
+                        "status","error",
+                        "message","Please enter correct data!"
+                ));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
     @Override
