@@ -60,7 +60,7 @@ public class EmployeeServlet extends HttpServlet {
             preparedStatement.setString(5, fileName);
 
             int executed=preparedStatement.executeUpdate();
-            
+
             ObjectMapper mapper = new ObjectMapper();
             PrintWriter out = resp.getWriter();
             resp.setContentType("application/json");
